@@ -152,6 +152,63 @@ function wandtech_custom_order_manager_add_orders_menu() {
     // );
 }
 
+
+// Remove 'Add New' button on WooCommerce Orders page for 'order_manager' role and etc...
+add_action('admin_head', 'wandtech_remove_add_new_order_button_for_order_manager');
+function wandtech_remove_add_new_order_button_for_order_manager() {
+    global $typenow;
+
+        echo '<style>
+            .post-type-shop_order .page-title-action {
+                display: none !important;
+            }
+            select[name="action"] option[value="trash"],
+            select[name="action2"] option[value="trash"] {
+                display: none !important;
+            }
+            .subsubsub li.trash {
+                display: none !important;
+            }
+            .woocommerce-layout__header{
+                display: none !important;
+            }
+        </style>';
+}
+
+
+add_action('admin_bar_menu', 'wandtech_customize_admin_bar_for_order_manager', 999);
+function wandtech_customize_admin_bar_for_order_manager($wp_admin_bar) {
+    if (!current_user_can('order_manager')) {
+        return;
+    }
+
+    $keep = [
+        'site-name',
+        'top-secondary',
+    ];
+
+    foreach ($wp_admin_bar->get_nodes() as $node) {
+        if (!in_array($node->parent, $keep) && !in_array($node->id, $keep)) {
+            $wp_admin_bar->remove_node($node->id);
+        }
+    }
+}
+
+
+add_action('admin_head', 'wandtech_remove_help_tabs_for_order_manager');
+function wandtech_remove_help_tabs_for_order_manager() {
+    if (!current_user_can('order_manager')) {
+        return;
+    }
+
+    $screen = get_current_screen();
+    if ($screen) {
+        $screen->remove_help_tabs();
+        $screen->set_help_sidebar('');
+    }
+}
+
+
 // Remove "Duplicate" action link from product list for users with 'order_manager' role
 function wandtech_remove_duplicate_action_for_order_manager($actions, $post) {
     // Apply only to 'product' post type
