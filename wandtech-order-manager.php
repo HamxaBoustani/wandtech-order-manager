@@ -156,7 +156,10 @@ function wandtech_custom_order_manager_add_orders_menu() {
 // Remove 'Add New' button on WooCommerce Orders page for 'order_manager' role and etc...
 add_action('admin_head', 'wandtech_remove_add_new_order_button_for_order_manager');
 function wandtech_remove_add_new_order_button_for_order_manager() {
-    global $typenow;
+    $user = wp_get_current_user();
+
+    if (in_array('order_manager', (array) $user->roles)) {
+        global $typenow;
 
         echo '<style>
             .post-type-shop_order .page-title-action {
@@ -169,10 +172,14 @@ function wandtech_remove_add_new_order_button_for_order_manager() {
             .subsubsub li.trash {
                 display: none !important;
             }
-            .woocommerce-layout__header{
+            .woocommerce-layout__header {
+                display: none !important;
+            }
+            .order_data_column .wc-customer-user {
                 display: none !important;
             }
         </style>';
+    }
 }
 
 
